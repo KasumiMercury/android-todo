@@ -88,6 +88,7 @@ fun TodoListItem(todo: TodoItem, modifier: Modifier = Modifier) {
                 modifier = modifier
             )
         },
+        modifier = modifier
     )
 }
 
