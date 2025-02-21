@@ -1,10 +1,12 @@
 package com.example.androidtodo
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.text.format.DateFormat
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,10 +14,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.androidtodo.ui.theme.AndroidTodoTheme
@@ -85,15 +93,35 @@ fun TodoListItem(todo: TodoItem, modifier: Modifier = Modifier) {
 
 @Composable
 fun TodoList(todos: List<TodoItem> = emptyList(), modifier: Modifier = Modifier) {
+    var showDialog by rememberSaveable { mutableStateOf(false) }
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
         for (todo in todos) {
-            TodoListItem(todo = todo)
+            TodoListItem(todo = todo, modifier = Modifier.clickable { showDialog = true })
         }
     }
+
+    if (showDialog) {
+        Dialog(
+            onConfirm = {
+                showDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+fun Dialog(onConfirm: () -> Unit = {}) {
+    AlertDialog(
+        text = { Text("Hello!") },
+        confirmButton = { TextButton(onClick = onConfirm) {
+            Text("Close")
+        } },
+        onDismissRequest = { /* handle dialog close event */ }
+    )
 }
 
 @Composable
