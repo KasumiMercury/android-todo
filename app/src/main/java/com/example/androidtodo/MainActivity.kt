@@ -1,19 +1,15 @@
 package com.example.androidtodo
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.text.format.DateFormat
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
@@ -93,12 +89,13 @@ fun TodoListItem(todo: TodoItem, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TodoList(todos: List<TodoItem> = emptyList(), modifier: Modifier = Modifier) {
+fun TodoList(modifier: Modifier = Modifier, todos: List<TodoItem> = emptyList()) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
-    LazyColumn (
+
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
-    ){
+    ) {
         items(todos, key = { todo -> todo.id() }) { todo ->
             TodoListItem(todo = todo, modifier = Modifier.clickable { showDialog = true })
         }
@@ -117,18 +114,12 @@ fun TodoList(todos: List<TodoItem> = emptyList(), modifier: Modifier = Modifier)
 fun Dialog(onConfirm: () -> Unit = {}) {
     AlertDialog(
         text = { Text("Hello!") },
-        confirmButton = { TextButton(onClick = onConfirm) {
-            Text("Close")
-        } },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Close")
+            }
+        },
         onDismissRequest = { /* handle dialog close event */ }
-    )
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
     )
 }
 
