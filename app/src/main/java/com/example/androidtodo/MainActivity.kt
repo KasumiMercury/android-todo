@@ -95,12 +95,11 @@ fun TodoListItem(todo: TodoItem, modifier: Modifier = Modifier) {
 @Composable
 fun TodoList(todos: List<TodoItem> = emptyList(), modifier: Modifier = Modifier) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
-    Column(
+    LazyColumn (
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        for (todo in todos) {
+    ){
+        items(todos, key = { todo -> todo.id() }) { todo ->
             TodoListItem(todo = todo, modifier = Modifier.clickable { showDialog = true })
         }
     }
