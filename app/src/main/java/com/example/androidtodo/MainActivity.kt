@@ -30,7 +30,7 @@ import java.util.UUID.randomUUID
 
 class MainActivity : ComponentActivity() {
 
-    val todos = listOf(
+    private val todos = listOf(
         TodoItem("Buy milk", LocalDateTime.now().plusDays(1)),
         TodoItem("Walk the dog", LocalDateTime.now().plusDays(2)),
         TodoItem("Do homework", LocalDateTime.now().plusDays(3)),
