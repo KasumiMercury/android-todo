@@ -84,7 +84,12 @@ fun App() {
     ) {
         composable<Route.Todo> {
             Scaffold { innerPadding ->
-                TodoList(todos = todos, modifier = Modifier.padding(innerPadding))
+                TodoList(
+                    todos = todos,
+                    modifier = Modifier.padding(innerPadding),
+                    onTodoClick = { todo ->
+                        navController.navigate(Route.TodoDetail(todo.id()))
+                    })
             }
         }
 
@@ -126,7 +131,11 @@ fun TodoListItem(todo: TodoItem, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TodoList(modifier: Modifier = Modifier, todos: List<TodoItem> = emptyList()) {
+fun TodoList(
+    modifier: Modifier = Modifier,
+    todos: List<TodoItem> = emptyList(),
+    onTodoClick: (TodoItem) -> Unit = {}
+) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
     LazyColumn(
@@ -134,7 +143,9 @@ fun TodoList(modifier: Modifier = Modifier, todos: List<TodoItem> = emptyList())
             .fillMaxSize()
     ) {
         items(todos, key = { todo -> todo.id() }) { todo ->
-            TodoListItem(todo = todo, modifier = Modifier.clickable { showDialog = true })
+            TodoListItem(todo = todo, modifier = Modifier.clickable {
+                onTodoClick(todo)
+            })
         }
     }
 
