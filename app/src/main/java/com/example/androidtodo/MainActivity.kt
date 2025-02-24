@@ -22,40 +22,77 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.androidtodo.ui.theme.AndroidTodoTheme
+import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.UUID.randomUUID
 
+private val todos = listOf(
+    TodoItem("Buy milk", LocalDateTime.now().plusDays(1)),
+    TodoItem("Walk the dog", LocalDateTime.now().plusDays(2)),
+    TodoItem("Do homework", LocalDateTime.now().plusDays(3)),
+    TodoItem("Go to the gym", LocalDateTime.now().plusDays(4)),
+    TodoItem("Call mom", LocalDateTime.now().plusDays(5)),
+    TodoItem("Buy a present", LocalDateTime.now().plusDays(6)),
+    TodoItem("Read a book", LocalDateTime.now().plusDays(7)),
+    TodoItem("Go to the cinema", LocalDateTime.now().plusDays(8)),
+    TodoItem("Cook dinner", LocalDateTime.now().plusDays(9)),
+    TodoItem("Go to bed", LocalDateTime.now().plusDays(10)),
+    TodoItem("Wake up", LocalDateTime.now().plusDays(11)),
+    TodoItem("Go to work", LocalDateTime.now().plusDays(12)),
+    TodoItem("Go to the doctor", LocalDateTime.now().plusDays(13)),
+    TodoItem("Go to the dentist", LocalDateTime.now().plusDays(14)),
+    TodoItem("Go to the pharmacy", LocalDateTime.now().plusDays(15)),
+)
+
 class MainActivity : ComponentActivity() {
-
-    private val todos = listOf(
-        TodoItem("Buy milk", LocalDateTime.now().plusDays(1)),
-        TodoItem("Walk the dog", LocalDateTime.now().plusDays(2)),
-        TodoItem("Do homework", LocalDateTime.now().plusDays(3)),
-        TodoItem("Go to the gym", LocalDateTime.now().plusDays(4)),
-        TodoItem("Call mom", LocalDateTime.now().plusDays(5)),
-        TodoItem("Buy a present", LocalDateTime.now().plusDays(6)),
-        TodoItem("Read a book", LocalDateTime.now().plusDays(7)),
-        TodoItem("Go to the cinema", LocalDateTime.now().plusDays(8)),
-        TodoItem("Cook dinner", LocalDateTime.now().plusDays(9)),
-        TodoItem("Go to bed", LocalDateTime.now().plusDays(10)),
-        TodoItem("Wake up", LocalDateTime.now().plusDays(11)),
-        TodoItem("Go to work", LocalDateTime.now().plusDays(12)),
-        TodoItem("Go to the doctor", LocalDateTime.now().plusDays(13)),
-        TodoItem("Go to the dentist", LocalDateTime.now().plusDays(14)),
-        TodoItem("Go to the pharmacy", LocalDateTime.now().plusDays(15)),
-    )
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             AndroidTodoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    TodoList(todos = todos, modifier = Modifier.padding(innerPadding))
-                }
+                App()
+//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+//                    TodoList(todos = todos, modifier = Modifier.padding(innerPadding))
+//                }
+            }
+        }
+    }
+}
+
+object Route {
+    @Serializable
+    data object Todo
+
+    @Serializable
+    data class TodoDetail(
+        val id: String
+    )
+}
+
+@Composable
+fun App() {
+    val navController = rememberNavController()
+    NavHost(
+        navController = navController,
+        startDestination = Route.Todo
+    ) {
+        composable<Route.Todo> {
+            Scaffold { innerPadding ->
+                TodoList(todos = todos, modifier = Modifier.padding(innerPadding))
+            }
+        }
+
+        composable<Route.TodoDetail> { navBackStackEntry ->
+            val id = navBackStackEntry.arguments?.getString("id") ?: ""
+            val todo = todos.find { it.id() == id } ?: return@composable
+            Scaffold { innerPadding ->
+                TodoDetail(title = todo.title(), modifier = Modifier.padding(innerPadding))
             }
         }
     }
@@ -108,6 +145,11 @@ fun TodoList(modifier: Modifier = Modifier, todos: List<TodoItem> = emptyList())
             }
         )
     }
+}
+
+@Composable
+fun TodoDetail(modifier: Modifier = Modifier, title: String) {
+    Text(text = title, modifier = modifier)
 }
 
 @Composable
