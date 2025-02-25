@@ -1,22 +1,46 @@
 package com.example.androidtodo
 
+import android.util.Log
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.SpringSpec
+import androidx.compose.animation.rememberSplineBasedDecay
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import com.example.androidtodo.ui.theme.AndroidTodoTheme
 import java.time.LocalDateTime
+import kotlin.math.roundToInt
 
 @Composable
 fun TodoList(
@@ -46,18 +70,101 @@ fun TodoList(
     }
 }
 
+private enum class DeleteSwapState {
+    INITIAL,
+    OPENED,
+    OVER_SWIPED
+}
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TodoListItem(todo: TodoItem, modifier: Modifier = Modifier) {
-    ListItem(
-        headlineContent = { Text(todo.title()) },
-        supportingContent = {
-            Text(
-                text = todo.formattedDeadline(),
-                modifier = modifier
+    BoxWithConstraints {
+        val maxWidthPx = with(LocalDensity.current) {
+            maxWidth.toPx()
+        }
+        val deleteButtonWidthPx = with(LocalDensity.current) {
+            30.dp.toPx()
+        }
+        val velocityThreshold = with(LocalDensity.current) {
+            125.dp.toPx()
+        }
+
+        val anchors = DraggableAnchors {
+            DeleteSwapState.INITIAL at 0f
+            DeleteSwapState.OPENED at deleteButtonWidthPx
+            DeleteSwapState.OVER_SWIPED at maxWidthPx * 0.6f
+        }
+
+        Log.d("item", todo.id())
+        Log.d("anchor", anchors.toString())
+
+        val decayAnimationSpec = rememberSplineBasedDecay<Float>()
+
+        val state = remember {
+            AnchoredDraggableState(
+                initialValue = DeleteSwapState.INITIAL,
+                anchors = anchors,
+                positionalThreshold = { distance: Float -> distance * 0.5f },
+                velocityThreshold = { velocityThreshold },
+                snapAnimationSpec = SpringSpec(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessMediumLow
+                ),
+                decayAnimationSpec = decayAnimationSpec,
+                confirmValueChange = {
+                    when (it) {
+                        DeleteSwapState.OVER_SWIPED -> false
+                        else -> true
+                    }
+                }
             )
-        },
-        modifier = modifier
-    )
+        }
+
+        Box(
+            modifier = Modifier
+                .anchoredDraggable(
+                    state = state,
+                    orientation = Orientation.Horizontal,
+                    reverseDirection = true
+                )
+        ) {
+
+            // delete button
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .background(
+                        Color.Red
+                    )
+            ) {
+                Text(
+                    text = "Delete",
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
+            }
+
+            // item
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .offset { IntOffset(-state.offset.roundToInt(), 0) }
+            ) {
+                ListItem(
+                    headlineContent = { Text(todo.title()) },
+                    supportingContent = {
+                        Text(
+                            text = todo.formattedDeadline(),
+                            modifier = modifier
+                        )
+                    },
+                    modifier = modifier
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -95,7 +202,6 @@ fun GreetingPreview() {
     )
 
     AndroidTodoTheme {
-//        Greeting("Android")
         TodoList(todos = todos)
     }
 }
