@@ -11,13 +11,17 @@ import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -33,8 +37,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -83,8 +87,10 @@ fun TodoListItem(todo: TodoItem, modifier: Modifier = Modifier) {
         val maxWidthPx = with(LocalDensity.current) {
             maxWidth.toPx()
         }
+
+        val deleteButtonWidth = 64.dp
         val deleteButtonWidthPx = with(LocalDensity.current) {
-            30.dp.toPx()
+            deleteButtonWidth.toPx()
         }
         val velocityThreshold = with(LocalDensity.current) {
             125.dp.toPx()
@@ -128,29 +134,37 @@ fun TodoListItem(todo: TodoItem, modifier: Modifier = Modifier) {
                     orientation = Orientation.Horizontal,
                     reverseDirection = true
                 )
+                .wrapContentHeight()
         ) {
 
             // delete button
-            Box(
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .background(
-                        Color.Red
-                    )
+                    .matchParentSize(),
+                horizontalArrangement = Arrangement.End
             ) {
-                Text(
-                    text = "Delete",
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                )
+                Box (
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(deleteButtonWidth)
+                        .background(MaterialTheme.colorScheme.error),
+                    contentAlignment = Alignment.Center
+                ){
+                    Text(
+                        text = "Delete",
+                        color = MaterialTheme.colorScheme.onError,
+                        modifier = Modifier.wrapContentSize(),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
 
             // item
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
                     .offset { IntOffset(-state.offset.roundToInt(), 0) }
+                    .background(MaterialTheme.colorScheme.surface)
             ) {
                 ListItem(
                     headlineContent = { Text(todo.title()) },
