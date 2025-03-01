@@ -1,5 +1,6 @@
-package com.example.androidtodo
+package com.example.androidtodo.data
 
+import com.example.androidtodo.listview.TodoItem
 import java.time.LocalDateTime
 
 class TodoModel {
