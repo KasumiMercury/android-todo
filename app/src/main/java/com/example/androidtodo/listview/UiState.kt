@@ -1,6 +1,4 @@
-package com.example.androidtodo
-
-import com.example.androidtodo.listview.TodoItem
+package com.example.androidtodo.listview
 
 sealed interface UiState {
     data object Loading : UiState

@@ -42,16 +42,30 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidtodo.ui.theme.AndroidTodoTheme
-import java.time.LocalDateTime
 import kotlin.math.roundToInt
 
 @Composable
 fun TodoList(
     modifier: Modifier = Modifier,
-    todos: List<TodoItem> = emptyList(),
+    viewModel: TodoViewModel = viewModel(),
     onTodoClick: (TodoItem) -> Unit = {}
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val todos = mutableListOf<TodoItem>()
+
+    when (uiState) {
+        is UiState.Loading -> Text("Loading...")
+        is UiState.Error -> TODO()
+        is UiState.Success -> {
+            todos.clear()
+            todos.addAll((uiState as UiState.Success).todos)
+        }
+    }
+
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
     LazyColumn(
@@ -143,13 +157,13 @@ fun TodoListItem(todo: TodoItem, modifier: Modifier = Modifier) {
                     .matchParentSize(),
                 horizontalArrangement = Arrangement.End
             ) {
-                Box (
+                Box(
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(deleteButtonWidth)
                         .background(MaterialTheme.colorScheme.error),
                     contentAlignment = Alignment.Center
-                ){
+                ) {
                     Text(
                         text = "Delete",
                         color = MaterialTheme.colorScheme.onError,
@@ -197,25 +211,25 @@ fun Dialog(onConfirm: () -> Unit = {}) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    val todos = listOf(
-        TodoItem("Buy milk", LocalDateTime.now().plusDays(1)),
-        TodoItem("Walk the dog", LocalDateTime.now().plusDays(2)),
-        TodoItem("Do homework", LocalDateTime.now().plusDays(3)),
-        TodoItem("Go to the gym", LocalDateTime.now().plusDays(4)),
-        TodoItem("Call mom", LocalDateTime.now().plusDays(5)),
-        TodoItem("Buy a present", LocalDateTime.now().plusDays(6)),
-        TodoItem("Read a book", LocalDateTime.now().plusDays(7)),
-        TodoItem("Go to the cinema", LocalDateTime.now().plusDays(8)),
-        TodoItem("Cook dinner", LocalDateTime.now().plusDays(9)),
-        TodoItem("Go to bed", LocalDateTime.now().plusDays(10)),
-        TodoItem("Wake up", LocalDateTime.now().plusDays(11)),
-        TodoItem("Go to work", LocalDateTime.now().plusDays(12)),
-        TodoItem("Go to the doctor", LocalDateTime.now().plusDays(13)),
-        TodoItem("Go to the dentist", LocalDateTime.now().plusDays(14)),
-        TodoItem("Go to the pharmacy", LocalDateTime.now().plusDays(15)),
-    )
+//    val todos = listOf(
+//        TodoItem("Buy milk", LocalDateTime.now().plusDays(1)),
+//        TodoItem("Walk the dog", LocalDateTime.now().plusDays(2)),
+//        TodoItem("Do homework", LocalDateTime.now().plusDays(3)),
+//        TodoItem("Go to the gym", LocalDateTime.now().plusDays(4)),
+//        TodoItem("Call mom", LocalDateTime.now().plusDays(5)),
+//        TodoItem("Buy a present", LocalDateTime.now().plusDays(6)),
+//        TodoItem("Read a book", LocalDateTime.now().plusDays(7)),
+//        TodoItem("Go to the cinema", LocalDateTime.now().plusDays(8)),
+//        TodoItem("Cook dinner", LocalDateTime.now().plusDays(9)),
+//        TodoItem("Go to bed", LocalDateTime.now().plusDays(10)),
+//        TodoItem("Wake up", LocalDateTime.now().plusDays(11)),
+//        TodoItem("Go to work", LocalDateTime.now().plusDays(12)),
+//        TodoItem("Go to the doctor", LocalDateTime.now().plusDays(13)),
+//        TodoItem("Go to the dentist", LocalDateTime.now().plusDays(14)),
+//        TodoItem("Go to the pharmacy", LocalDateTime.now().plusDays(15)),
+//    )
 
     AndroidTodoTheme {
-        TodoList(todos = todos)
+        TodoList()
     }
 }

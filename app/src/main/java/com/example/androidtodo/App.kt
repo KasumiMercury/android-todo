@@ -22,7 +22,6 @@ fun App() {
         composable<Route.Todo> {
             Scaffold { innerPadding ->
                 TodoList(
-                    todos = todos,
                     modifier = Modifier.padding(innerPadding),
                     onTodoClick = { todo ->
                         navController.navigate(Route.TodoDetail(todo.id()))
