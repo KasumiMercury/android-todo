@@ -8,8 +8,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.androidtodo.detail.TodoDetail
-import com.example.androidtodo.listview.TodoList
-import com.example.androidtodo.listview.todos
+import com.example.androidtodo.data.todos
+import com.example.androidtodo.tasklist.TaskListScreen
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -21,12 +21,12 @@ fun App() {
     ) {
         composable<Route.Todo> {
             Scaffold { innerPadding ->
-                TodoList(
-                    todos = todos,
+                TaskListScreen(
                     modifier = Modifier.padding(innerPadding),
                     onTodoClick = { todo ->
                         navController.navigate(Route.TodoDetail(todo.id()))
-                    })
+                    }
+                )
             }
         }
 
