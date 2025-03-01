@@ -1,4 +1,4 @@
-package com.example.androidtodo.listview
+package com.example.androidtodo.tasklist
 
 import android.util.Log
 import androidx.compose.animation.core.Spring
@@ -51,7 +51,7 @@ import kotlin.math.roundToInt
 @Composable
 fun TodoList(
     modifier: Modifier = Modifier,
-    viewModel: TodoViewModel = viewModel(),
+    viewModel: TaskListViewModel = viewModel(),
     onTodoClick: (TaskItem) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -59,11 +59,11 @@ fun TodoList(
     val todos = mutableListOf<TaskItem>()
 
     when (uiState) {
-        is UiState.Loading -> Text("Loading...")
-        is UiState.Error -> TODO()
-        is UiState.Success -> {
+        is TaskListUiState.Loading -> Text("Loading...")
+        is TaskListUiState.Error -> TODO()
+        is TaskListUiState.Success -> {
             todos.clear()
-            todos.addAll((uiState as UiState.Success).todos)
+            todos.addAll((uiState as TaskListUiState.Success).todos)
         }
     }
 

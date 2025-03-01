@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.androidtodo.detail.TodoDetail
-import com.example.androidtodo.listview.TodoList
+import com.example.androidtodo.tasklist.TodoList
 import com.example.androidtodo.data.todos
 import kotlinx.serialization.Serializable
 
