@@ -49,23 +49,32 @@ import com.example.androidtodo.ui.theme.AndroidTodoTheme
 import kotlin.math.roundToInt
 
 @Composable
-fun TodoList(
+fun TaskListScreen(
     modifier: Modifier = Modifier,
     viewModel: TaskListViewModel = viewModel(),
     onTodoClick: (TaskItem) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val todos = mutableListOf<TaskItem>()
-
     when (uiState) {
         is TaskListUiState.Loading -> Text("Loading...")
-        is TaskListUiState.Error -> TODO()
+        is TaskListUiState.Error -> Text("Error")
         is TaskListUiState.Success -> {
-            todos.clear()
-            todos.addAll((uiState as TaskListUiState.Success).todos)
+            TaskListComponent(
+                modifier = modifier,
+                tasks = (uiState as TaskListUiState.Success).tasks,
+                onTodoClick = onTodoClick
+            )
         }
     }
+}
+
+@Composable
+fun TaskListComponent(
+    modifier: Modifier = Modifier,
+    tasks: List<TaskItem> = emptyList(),
+    onTodoClick: (TaskItem) -> Unit = {}
+) {
 
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -73,8 +82,8 @@ fun TodoList(
         modifier = modifier
             .fillMaxSize()
     ) {
-        items(todos, key = { todo -> todo.id() }) { todo ->
-            TodoListItem(todo = todo, modifier = Modifier.clickable {
+        items(tasks, key = { todo -> todo.id() }) { todo ->
+            TaskListItem(todo = todo, modifier = Modifier.clickable {
                 onTodoClick(todo)
             })
         }
@@ -97,7 +106,7 @@ private enum class DeleteSwapState {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TodoListItem(todo: TaskItem, modifier: Modifier = Modifier) {
+fun TaskListItem(todo: TaskItem, modifier: Modifier = Modifier) {
     BoxWithConstraints {
         val maxWidthPx = with(LocalDensity.current) {
             maxWidth.toPx()
@@ -231,6 +240,6 @@ fun GreetingPreview() {
 //    )
 
     AndroidTodoTheme {
-        TodoList()
+        TaskListComponent()
     }
 }
