@@ -2,6 +2,7 @@ package com.example.androidtodo.listview
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.androidtodo.data.TaskItem
 import com.example.androidtodo.data.TodoModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class TodoViewModel : ViewModel() {
     private val model = TodoModel()
-    private val items: MutableStateFlow<List<TodoItem>> = MutableStateFlow(emptyList())
+    private val items: MutableStateFlow<List<TaskItem>> = MutableStateFlow(emptyList())
 
     init {
         viewModelScope.launch {

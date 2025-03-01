@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.androidtodo.data.TaskItem
 import com.example.androidtodo.ui.theme.AndroidTodoTheme
 import kotlin.math.roundToInt
 
@@ -51,11 +52,11 @@ import kotlin.math.roundToInt
 fun TodoList(
     modifier: Modifier = Modifier,
     viewModel: TodoViewModel = viewModel(),
-    onTodoClick: (TodoItem) -> Unit = {}
+    onTodoClick: (TaskItem) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val todos = mutableListOf<TodoItem>()
+    val todos = mutableListOf<TaskItem>()
 
     when (uiState) {
         is UiState.Loading -> Text("Loading...")
@@ -96,7 +97,7 @@ private enum class DeleteSwapState {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TodoListItem(todo: TodoItem, modifier: Modifier = Modifier) {
+fun TodoListItem(todo: TaskItem, modifier: Modifier = Modifier) {
     BoxWithConstraints {
         val maxWidthPx = with(LocalDensity.current) {
             maxWidth.toPx()
