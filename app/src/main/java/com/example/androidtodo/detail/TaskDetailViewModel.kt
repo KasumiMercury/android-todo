@@ -6,15 +6,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.androidtodo.data.TaskItem
 import com.example.androidtodo.data.TodoModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class TaskDetailViewModel(
     private val taskId: String
 ) : ViewModel() {
     private val model = TodoModel()
-    private val item: MutableState<TaskItem?> = mutableStateOf(null)
+    private val item: MutableStateFlow<TaskItem?> = MutableStateFlow(null)
 
     init {
         viewModelScope.launch {
@@ -22,11 +25,15 @@ class TaskDetailViewModel(
         }
     }
 
-    val uiState: () -> TaskDetailUiState =  {
-        if (item.value == null) {
+    val uiState: StateFlow<TaskDetailUiState> = item.map {
+        if (it == null) {
             TaskDetailUiState.Loading
         } else {
-            TaskDetailUiState.Success(item.value!!)
+            TaskDetailUiState.Success(it)
         }
-    }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = TaskDetailUiState.Loading
+    )
 }
