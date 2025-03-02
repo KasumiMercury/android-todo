@@ -21,11 +21,11 @@ private val tasks = mutableListOf<TaskItem>(
 )
 
 class TodoModel {
-    suspend fun getTodos(): List<TaskItem> {
+    fun getTasks(): List<TaskItem> {
         return tasks
     }
 
-    suspend fun getTaskById(id: String): TaskItem? {
+    fun getTaskById(id: String): TaskItem? {
         return tasks.find { it.id() == id }
     }
 }

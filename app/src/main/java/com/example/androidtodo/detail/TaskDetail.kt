@@ -12,11 +12,6 @@ import com.example.androidtodo.data.TaskItem
 import java.time.LocalDateTime
 
 @Composable
-fun TodoDetail(modifier: Modifier = Modifier, title: String) {
-    Text(text = title, modifier = modifier)
-}
-
-@Composable
 fun TaskDetailScreen(
     modifier: Modifier = Modifier,
     taskId: String,

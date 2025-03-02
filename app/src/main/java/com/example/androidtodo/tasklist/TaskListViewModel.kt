@@ -17,7 +17,7 @@ class TaskListViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            items.value = model.getTodos()
+            items.value = model.getTasks()
         }
     }
 
