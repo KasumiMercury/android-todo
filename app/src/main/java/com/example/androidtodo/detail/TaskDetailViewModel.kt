@@ -25,11 +25,11 @@ class TaskDetailViewModel(
         }
     }
 
-    val uiState: StateFlow<TaskDetailUiState> = item.map {
-        if (it == null) {
+    val uiState: StateFlow<TaskDetailUiState> = item.map { task ->
+        if (task == null) {
             TaskDetailUiState.Loading
         } else {
-            TaskDetailUiState.Success(it)
+            TaskDetailUiState.Success(task)
         }
     }.stateIn(
         scope = viewModelScope,

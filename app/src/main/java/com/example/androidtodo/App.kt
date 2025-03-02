@@ -7,8 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.androidtodo.detail.TodoDetail
-import com.example.androidtodo.data.todos
+import com.example.androidtodo.detail.TaskDetailScreen
 import com.example.androidtodo.tasklist.TaskListScreen
 import kotlinx.serialization.Serializable
 
@@ -31,10 +30,12 @@ fun App() {
         }
 
         composable<Route.TodoDetail> { navBackStackEntry ->
-            val id = navBackStackEntry.arguments?.getString("id") ?: ""
-            val todo = todos.find { it.id() == id } ?: return@composable
             Scaffold { innerPadding ->
-                TodoDetail(title = todo.title(), modifier = Modifier.padding(innerPadding))
+                val todoId = navBackStackEntry.arguments?.getString("id") ?: ""
+                TaskDetailScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    taskId = todoId
+                )
             }
         }
     }
