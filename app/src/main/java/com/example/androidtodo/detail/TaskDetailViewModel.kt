@@ -1,4 +1,4 @@
-package com.example.androidtodo.tasklist
+package com.example.androidtodo.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,25 +11,27 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class TaskListViewModel : ViewModel() {
+class TaskDetailViewModel(
+    private val taskId: String
+) : ViewModel() {
     private val model = TodoModel()
-    private val items: MutableStateFlow<List<TaskItem>> = MutableStateFlow(emptyList())
+    private val item: MutableStateFlow<TaskItem?> = MutableStateFlow(null)
 
     init {
         viewModelScope.launch {
-            items.value = model.getTasks()
+            item.value = model.getTaskById(taskId)
         }
     }
 
-    val uiState: StateFlow<TaskListUiState> = items.map { todos ->
-        if (todos.isEmpty()) {
-            TaskListUiState.Loading
+    val uiState: StateFlow<TaskDetailUiState> = item.map { task ->
+        if (task == null) {
+            TaskDetailUiState.Loading
         } else {
-            TaskListUiState.Success(todos)
+            TaskDetailUiState.Success(task)
         }
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = TaskListUiState.Loading
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = TaskDetailUiState.Loading
     )
 }
